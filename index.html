@@ -3,40 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bingo Game</title>
+  <title>Teeside Business Awards Bingo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* Container to center the content */
+    /* Global styling */
     body {
+      font-family: 'Montserrat', sans-serif;
       margin: 0;
-      font-family: sans-serif;
-      background: #f2f2f2;
+      background-color: #121212;
+      color: #eee;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
     }
+    /* Container that holds everything */
     .container {
       max-width: 600px;
       width: 90%;
       text-align: center;
-      background: #fff;
+      background-color: #1e1e1e;
       border-radius: 10px;
-      box-shadow: 0px 2px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       padding: 20px;
     }
+    /* Logo styling */
+    .logo {
+      max-width: 150px;
+      margin-bottom: 10px;
+    }
+    /* Heading & rules */
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .rules {
+      text-align: left;
+      margin: 0 0 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 0;
+      list-style: none;
+    }
+    .rules li {
+      margin-bottom: 5px;
     }
     /* The 3x3 grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-gap: 10px;
+      gap: 10px;
     }
     .square {
-      background: #e0e0e0;
-      border: 2px solid #ccc;
+      background-color: #2a2a2a;
+      border: 2px solid #444;
       border-radius: 8px;
       padding: 10px;
       cursor: pointer;
@@ -44,17 +64,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 12px;
       transition: background 0.3s, transform 0.2s;
       user-select: none;
       position: relative;
     }
     .square:hover {
-      transform: scale(1.02);
+      transform: scale(1.05);
     }
-    /* Tapped state adds a beer emoji marker (via a pseudo-element) */
+    /* Tapped state: changes background and displays 🍺 marker */
     .square.tapped {
-      background-color: #d4edda;
+      background-color: #3a9d23;
     }
     .square.tapped::after {
       content: "🍺";
@@ -82,10 +102,17 @@
 </head>
 <body>
   <div class="container">
-    <h1>Bingo Game</h1>
-    <!-- The grid container -->
+    <!-- Replace "achieve-logo.png" with your actual logo file or URL -->
+    <img src="achieve-logo.png" alt="Achieve Professionals Logo" class="logo" />
+    <h1>Teeside Business Awards Bingo</h1>
+    <ul class="rules">
+      <li><strong>Rules:</strong></li>
+      <li>One sip when you mark off a square</li>
+      <li>Three sips (or a shot) for completing a line</li>
+      <li>Finish your drink for a full board!</li>
+    </ul>
+    <!-- Bingo grid container -->
     <div id="bingo-grid" class="grid"></div>
-    <!-- Reset button -->
     <button id="reset-btn">Reset</button>
   </div>
   
@@ -93,7 +120,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Final list of bingo phrases
+      // Bingo phrases
       const phrases = [
         'Someone says "We\'re so honoured to be nominated"',
         'Award winner thanks their team',
@@ -106,7 +133,7 @@
         'Winner admits they didn\'t prepare a speech'
       ];
 
-      // Function to shuffle an array using the Fisher-Yates algorithm
+      // Fisher-Yates shuffle algorithm
       function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -115,11 +142,11 @@
         return array;
       }
 
-      // Load and display the grid with randomized phrases
+      // Load and display randomized bingo grid
       function loadGrid() {
         const gridContainer = document.getElementById('bingo-grid');
-        gridContainer.innerHTML = ''; // Clear any previous content
-        const shuffledPhrases = shuffle([...phrases]); // Create a copy and shuffle it
+        gridContainer.innerHTML = ''; // Clear previous grid
+        const shuffledPhrases = shuffle([...phrases]);
 
         shuffledPhrases.forEach(phrase => {
           const square = document.createElement('div');
@@ -130,7 +157,7 @@
         });
       }
 
-      // Handle a square tap: mark with tapped class and check if all are tapped
+      // Handle square tap
       function handleSquareClick(square) {
         if (!square.classList.contains('tapped')) {
           square.classList.add('tapped');
@@ -138,7 +165,7 @@
         }
       }
 
-      // If all squares have been tapped, trigger fireworks
+      // Check if all squares have been tapped
       function checkAllTapped() {
         const squares = document.querySelectorAll('.square');
         const allTapped = Array.from(squares).every(sq => sq.classList.contains('tapped'));
@@ -147,10 +174,9 @@
         }
       }
 
-      // Use canvas-confetti to simulate fireworks
+      // Trigger fireworks using canvas-confetti
       function triggerFireworks() {
-        // Fireworks parameters
-        const duration = 5 * 1000;
+        const duration = 5000;
         const animationEnd = Date.now() + duration;
         const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
 
@@ -172,12 +198,12 @@
         }, 250);
       }
 
-      // Attach event listener for the reset button
+      // Reset button functionality
       document.getElementById('reset-btn').addEventListener('click', () => {
         loadGrid();
       });
 
-      // Initialize the grid on page load
+      // Initialize grid on page load
       loadGrid();
     });
   </script>
