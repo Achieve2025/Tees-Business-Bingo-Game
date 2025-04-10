@@ -1,144 +1,185 @@
-<!-- Teeside Business Awards Bingo Game - Interactive Overlay by Achieve Professionals -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teeside Business Awards Bingo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bingo Game</title>
   <style>
+    /* Container to center the content */
     body {
       margin: 0;
-      background: #000;
       font-family: sans-serif;
+      background: #f2f2f2;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       min-height: 100vh;
-      overflow-x: hidden;
     }
-
-    h1 {
-      color: white;
-      margin: 20px 20px 10px;
+    .container {
+      max-width: 600px;
+      width: 90%;
       text-align: center;
-      font-size: 1.2rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 2px 12px rgba(0,0,0,0.1);
+      padding: 20px;
     }
-
-    button {
+    h1 {
       margin-bottom: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
+    }
+    /* The 3x3 grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+    }
+    .square {
+      background: #e0e0e0;
+      border: 2px solid #ccc;
       border-radius: 8px;
+      padding: 10px;
       cursor: pointer;
-      background-color: #ff69b4;
-      color: white;
-    }
-
-    .bingo-container {
-      position: relative;
-      width: 100%;
-      max-width: 768px;
-      aspect-ratio: 768 / 1090;
-      background: url("Teesside Business A5 Advert.png") no-repeat center/contain;
-      background-color: #000;
-    }
-
-    .blob, .click-zone {
-      position: absolute;
-      width: 20.83%;
-      height: 14.68%;
-    }
-
-    .blob {
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 5rem; /* doubled from 2.5rem */
-      pointer-events: none;
+      font-size: 14px;
+      transition: background 0.3s, transform 0.2s;
+      user-select: none;
+      position: relative;
     }
-
-    .click-zone {
+    .square:hover {
+      transform: scale(1.02);
+    }
+    /* Tapped state adds a beer emoji marker (via a pseudo-element) */
+    .square.tapped {
+      background-color: #d4edda;
+    }
+    .square.tapped::after {
+      content: "🍺";
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 24px;
+    }
+    /* Reset button styling */
+    #reset-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
       cursor: pointer;
+      transition: background 0.3s;
     }
-
-    .fireworks {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 70%);
-      z-index: 999;
-      animation: flash 0.5s ease-out 5;
-    }
-
-    @keyframes flash {
-      0% { opacity: 0; }
-      50% { opacity: 1; }
-      100% { opacity: 0; }
+    #reset-btn:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h1>Tap a Square to Mark It 🍺</h1>
-  <button onclick="resetBoard()">Reset Board</button>
-  <div class="bingo-container" id="bingoContainer"></div>
-
+  <div class="container">
+    <h1>Bingo Game</h1>
+    <!-- The grid container -->
+    <div id="bingo-grid" class="grid"></div>
+    <!-- Reset button -->
+    <button id="reset-btn">Reset</button>
+  </div>
+  
+  <!-- Canvas-confetti library for fireworks -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
-    const container = document.getElementById("bingoContainer");
+    document.addEventListener('DOMContentLoaded', () => {
+      // Final list of bingo phrases
+      const phrases = [
+        'Someone says "We\'re so honoured to be nominated"',
+        'Award winner thanks their team',
+        'Awkward technical difficulty',
+        'Presenter mispronounces a company name',
+        'Someone takes too long to reach the stage',
+        'Presenter makes a joke that falls flat',
+        'Winner mentions "challenging year"',
+        'Someone spills a drink at their table',
+        'Winner admits they didn\'t prepare a speech'
+      ];
 
-    const grid = [
-      [5, 34], [39, 34], [72.5, 34],
-      [5, 50], [39, 50], [72.5, 50],
-      [5, 66], [39, 66], [72.5, 66]
-    ];
-
-    grid.forEach(([x, y]) => {
-      const zone = document.createElement("div");
-      zone.className = "click-zone";
-      zone.style.left = x + "%";
-      zone.style.top = y + "%";
-
-      zone.addEventListener("click", () => {
-        const existing = Array.from(container.querySelectorAll(".blob"))
-          .find(b => b.style.left === x + "%" && b.style.top === y + "%");
-        if (existing) return;
-
-        const blob = document.createElement("div");
-        blob.className = "blob";
-        blob.innerHTML = "🍺";
-        blob.style.left = x + "%";
-        blob.style.top = y + "%";
-        container.appendChild(blob);
-
-        const blobs = container.querySelectorAll(".blob");
-        if (blobs.length === 9) {
-          setTimeout(() => {
-            alert("🎉 BINGO! You've completed the board! 🎉");
-            showFireworks();
-          }, 300);
+      // Function to shuffle an array using the Fisher-Yates algorithm
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+      }
+
+      // Load and display the grid with randomized phrases
+      function loadGrid() {
+        const gridContainer = document.getElementById('bingo-grid');
+        gridContainer.innerHTML = ''; // Clear any previous content
+        const shuffledPhrases = shuffle([...phrases]); // Create a copy and shuffle it
+
+        shuffledPhrases.forEach(phrase => {
+          const square = document.createElement('div');
+          square.className = 'square';
+          square.textContent = phrase;
+          square.addEventListener('click', () => handleSquareClick(square));
+          gridContainer.appendChild(square);
+        });
+      }
+
+      // Handle a square tap: mark with tapped class and check if all are tapped
+      function handleSquareClick(square) {
+        if (!square.classList.contains('tapped')) {
+          square.classList.add('tapped');
+          checkAllTapped();
+        }
+      }
+
+      // If all squares have been tapped, trigger fireworks
+      function checkAllTapped() {
+        const squares = document.querySelectorAll('.square');
+        const allTapped = Array.from(squares).every(sq => sq.classList.contains('tapped'));
+        if (allTapped) {
+          triggerFireworks();
+        }
+      }
+
+      // Use canvas-confetti to simulate fireworks
+      function triggerFireworks() {
+        // Fireworks parameters
+        const duration = 5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            return;
+          }
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0, 1), y: Math.random() - 0.2 }
+          }));
+        }, 250);
+      }
+
+      // Attach event listener for the reset button
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        loadGrid();
       });
 
-      container.appendChild(zone);
+      // Initialize the grid on page load
+      loadGrid();
     });
-
-    function resetBoard() {
-      const blobs = container.querySelectorAll(".blob");
-      blobs.forEach(b => b.remove());
-    }
-
-    function showFireworks() {
-      const fireworks = document.createElement("div");
-      fireworks.className = "fireworks";
-      document.body.appendChild(fireworks);
-
-      setTimeout(() => {
-        document.body.removeChild(fireworks);
-      }, 1500);
-    }
   </script>
 </body>
 </html>
