@@ -10,14 +10,14 @@
     body {
       font-family: 'Montserrat', sans-serif;
       margin: 0;
-      background-color: #121212;
+      background-color: #121212; /* Dark background */
       color: #eee;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
     }
-    /* Container that holds everything */
+    /* Main container */
     .container {
       max-width: 600px;
       width: 90%;
@@ -29,33 +29,40 @@
     }
     /* Logo styling */
     .logo {
-      max-width: 150px;
-      margin-bottom: 10px;
+      width: 150px; /* Recommended width; adjust as needed */
+      margin: 0 auto 10px;
+      display: block;
     }
-    /* Heading & rules */
+    /* Heading */
     h1 {
       margin-bottom: 10px;
       font-weight: 600;
     }
+    /* Rules list styling */
     .rules {
-      text-align: left;
+      text-align: center;
       margin: 0 0 20px;
       font-size: 14px;
       line-height: 1.5;
-      padding: 0;
       list-style: none;
+      padding: 0;
     }
-    .rules li {
+    .rules .rule {
       margin-bottom: 5px;
+      color: #eee;
+      transition: color 0.3s;
     }
-    /* The 3x3 grid */
+    .rules .rule.active {
+      color: #007bff; /* Blue color when activated */
+    }
+    /* Grid layout */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
     .square {
-      background-color: #2a2a2a;
+      background-color: #2a2a2a; /* Dark grey square */
       border: 2px solid #444;
       border-radius: 8px;
       padding: 10px;
@@ -72,16 +79,16 @@
     .square:hover {
       transform: scale(1.05);
     }
-    /* Tapped state: changes background and displays 🍺 marker */
     .square.tapped {
       background-color: #3a9d23;
     }
-    .square.tapped::after {
-      content: "🍺";
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      font-size: 24px;
+    /* Marker: large, centered beer emoji */
+    .marker {
+      display: block;
+      font-size: 64px; /* Quadruple the normal size */
+      text-align: center;
+      width: 100%;
+      line-height: 100px; /* Centers emoji vertically within the 100px square */
     }
     /* Reset button styling */
     #reset-btn {
@@ -102,14 +109,13 @@
 </head>
 <body>
   <div class="container">
-    <!-- Replace "achieve-logo.png" with your actual logo file or URL -->
-    <img src="achieve-logo.png" alt="Achieve Professionals Logo" class="logo" />
+    <!-- Reference to your logo file -->
+    <img src="AP Logo Bingo.png" alt="Achieve Professionals Logo" class="logo" />
     <h1>Teeside Business Awards Bingo</h1>
     <ul class="rules">
-      <li><strong>Rules:</strong></li>
-      <li>One sip when you mark off a square</li>
-      <li>Three sips (or a shot) for completing a line</li>
-      <li>Finish your drink for a full board!</li>
+      <li id="rule1" class="rule">One sip when you mark off a square</li>
+      <li id="rule2" class="rule">Three sips (or a shot) for completing a line</li>
+      <li id="rule3" class="rule">Finish your drink for a full board!</li>
     </ul>
     <!-- Bingo grid container -->
     <div id="bingo-grid" class="grid"></div>
@@ -124,88 +130,4 @@
       const phrases = [
         'Someone says "We\'re so honoured to be nominated"',
         'Award winner thanks their team',
-        'Awkward technical difficulty',
-        'Presenter mispronounces a company name',
-        'Someone takes too long to reach the stage',
-        'Presenter makes a joke that falls flat',
-        'Winner mentions "challenging year"',
-        'Someone spills a drink at their table',
-        'Winner admits they didn\'t prepare a speech'
-      ];
-
-      // Fisher-Yates shuffle algorithm
-      function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-      }
-
-      // Load and display randomized bingo grid
-      function loadGrid() {
-        const gridContainer = document.getElementById('bingo-grid');
-        gridContainer.innerHTML = ''; // Clear previous grid
-        const shuffledPhrases = shuffle([...phrases]);
-
-        shuffledPhrases.forEach(phrase => {
-          const square = document.createElement('div');
-          square.className = 'square';
-          square.textContent = phrase;
-          square.addEventListener('click', () => handleSquareClick(square));
-          gridContainer.appendChild(square);
-        });
-      }
-
-      // Handle square tap
-      function handleSquareClick(square) {
-        if (!square.classList.contains('tapped')) {
-          square.classList.add('tapped');
-          checkAllTapped();
-        }
-      }
-
-      // Check if all squares have been tapped
-      function checkAllTapped() {
-        const squares = document.querySelectorAll('.square');
-        const allTapped = Array.from(squares).every(sq => sq.classList.contains('tapped'));
-        if (allTapped) {
-          triggerFireworks();
-        }
-      }
-
-      // Trigger fireworks using canvas-confetti
-      function triggerFireworks() {
-        const duration = 5000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
-
-        function randomInRange(min, max) {
-          return Math.random() * (max - min) + min;
-        }
-
-        const interval = setInterval(function() {
-          const timeLeft = animationEnd - Date.now();
-          if (timeLeft <= 0) {
-            clearInterval(interval);
-            return;
-          }
-          const particleCount = 50 * (timeLeft / duration);
-          confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0, 1), y: Math.random() - 0.2 }
-          }));
-        }, 250);
-      }
-
-      // Reset button functionality
-      document.getElementById('reset-btn').addEventListener('click', () => {
-        loadGrid();
-      });
-
-      // Initialize grid on page load
-      loadGrid();
-    });
-  </script>
-</body>
-</html>
+        'Aw
