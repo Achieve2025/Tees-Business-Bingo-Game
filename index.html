@@ -15,24 +15,32 @@
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     h1 {
       color: white;
       margin: 20px;
+      text-align: center;
+      font-size: 1.2rem;
     }
 
     .bingo-container {
       position: relative;
-      width: 768px;
-      height: 1090px;
+      width: 100%;
+      max-width: 768px;
+      aspect-ratio: 768 / 1090;
       background: url("Teesside Business A5 Advert.png") no-repeat center/contain;
+      background-color: #000;
+    }
+
+    .blob, .click-zone {
+      position: absolute;
+      width: 20.83%;   /* 160px out of 768px */
+      height: 14.68%;  /* 160px out of 1090px */
     }
 
     .blob {
-      position: absolute;
-      width: 160px;
-      height: 160px;
       background: rgba(255, 105, 180, 0.7);
       border-radius: 50%;
       pointer-events: none;
@@ -40,9 +48,6 @@
     }
 
     .click-zone {
-      position: absolute;
-      width: 160px;
-      height: 160px;
       cursor: pointer;
     }
   </style>
@@ -54,24 +59,24 @@
   <script>
     const container = document.getElementById("bingoContainer");
 
-    // 3x3 grid – x and y coordinates for each square on the bingo board
+    // Grid using percentages to make it responsive
     const grid = [
-      [55, 370], [305, 370], [555, 370],
-      [55, 540], [305, 540], [555, 540],
-      [55, 710], [305, 710], [555, 710]
+      [5, 34], [39, 34], [72.5, 34],
+      [5, 50], [39, 50], [72.5, 50],
+      [5, 66], [39, 66], [72.5, 66]
     ];
 
     grid.forEach(([x, y]) => {
       const zone = document.createElement("div");
       zone.className = "click-zone";
-      zone.style.left = x + "px";
-      zone.style.top = y + "px";
+      zone.style.left = x + "%";
+      zone.style.top = y + "%";
 
       zone.addEventListener("click", () => {
         const blob = document.createElement("div");
         blob.className = "blob";
-        blob.style.left = x + "px";
-        blob.style.top = y + "px";
+        blob.style.left = x + "%";
+        blob.style.top = y + "%";
         container.appendChild(blob);
       });
 
