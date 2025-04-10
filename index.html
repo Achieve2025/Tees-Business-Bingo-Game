@@ -55,7 +55,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 5rem;
+      font-size: 5rem; /* doubled from 2.5rem */
       pointer-events: none;
     }
 
@@ -102,7 +102,6 @@
       zone.style.top = y + "%";
 
       zone.addEventListener("click", () => {
-        // Prevent multiple blobs in same square
         const existing = Array.from(container.querySelectorAll(".blob"))
           .find(b => b.style.left === x + "%" && b.style.top === y + "%");
         if (existing) return;
