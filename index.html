@@ -1,1 +1,83 @@
+<!-- Teeside Business Awards Bingo Game - Interactive Overlay by Achieve Professionals -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teeside Business Awards Bingo</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: white;
+      margin: 20px;
+    }
+
+    .bingo-container {
+      position: relative;
+      width: 768px;
+      height: 1090px;
+      background: url("Teesside Business A5 Advert.png") no-repeat center/contain;
+    }
+
+    .blob {
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      background: rgba(255, 105, 180, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: transform 0.2s ease;
+    }
+
+    .click-zone {
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tap a Square to Mark It</h1>
+  <div class="bingo-container" id="bingoContainer"></div>
+
+  <script>
+    const container = document.getElementById("bingoContainer");
+
+    // 3x3 grid – x and y coordinates for each square on the bingo board
+    const grid = [
+      [55, 370], [305, 370], [555, 370],
+      [55, 540], [305, 540], [555, 540],
+      [55, 710], [305, 710], [555, 710]
+    ];
+
+    grid.forEach(([x, y]) => {
+      const zone = document.createElement("div");
+      zone.className = "click-zone";
+      zone.style.left = x + "px";
+      zone.style.top = y + "px";
+
+      zone.addEventListener("click", () => {
+        const blob = document.createElement("div");
+        blob.className = "blob";
+        blob.style.left = x + "px";
+        blob.style.top = y + "px";
+        container.appendChild(blob);
+      });
+
+      container.appendChild(zone);
+    });
+  </script>
+</body>
+</html>
 
