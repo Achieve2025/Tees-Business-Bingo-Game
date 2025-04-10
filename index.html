@@ -20,9 +20,20 @@
 
     h1 {
       color: white;
-      margin: 20px;
+      margin: 20px 20px 10px;
       text-align: center;
       font-size: 1.2rem;
+    }
+
+    button {
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #ff69b4;
+      color: white;
     }
 
     .bingo-container {
@@ -36,30 +47,48 @@
 
     .blob, .click-zone {
       position: absolute;
-      width: 20.83%;   /* 160px out of 768px */
-      height: 14.68%;  /* 160px out of 1090px */
+      width: 20.83%;
+      height: 14.68%;
     }
 
     .blob {
-      background: rgba(255, 105, 180, 0.7);
-      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
       pointer-events: none;
-      transition: transform 0.2s ease;
     }
 
     .click-zone {
       cursor: pointer;
     }
+
+    .fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 70%);
+      z-index: 999;
+      animation: flash 0.5s ease-out 5;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
   </style>
 </head>
 <body>
-  <h1>Tap a Square to Mark It</h1>
+  <h1>Tap a Square to Mark It 🍺</h1>
+  <button onclick="resetBoard()">Reset Board</button>
   <div class="bingo-container" id="bingoContainer"></div>
 
   <script>
     const container = document.getElementById("bingoContainer");
 
-    // Grid using percentages to make it responsive
     const grid = [
       [5, 34], [39, 34], [72.5, 34],
       [5, 50], [39, 50], [72.5, 50],
@@ -73,16 +102,44 @@
       zone.style.top = y + "%";
 
       zone.addEventListener("click", () => {
+        // Prevent multiple blobs in same square
+        const existing = Array.from(container.querySelectorAll(".blob"))
+          .find(b => b.style.left === x + "%" && b.style.top === y + "%");
+        if (existing) return;
+
         const blob = document.createElement("div");
         blob.className = "blob";
+        blob.innerHTML = "🍺";
         blob.style.left = x + "%";
         blob.style.top = y + "%";
         container.appendChild(blob);
+
+        const blobs = container.querySelectorAll(".blob");
+        if (blobs.length === 9) {
+          setTimeout(() => {
+            alert("🎉 BINGO! You've completed the board! 🎉");
+            showFireworks();
+          }, 300);
+        }
       });
 
       container.appendChild(zone);
     });
+
+    function resetBoard() {
+      const blobs = container.querySelectorAll(".blob");
+      blobs.forEach(b => b.remove());
+    }
+
+    function showFireworks() {
+      const fireworks = document.createElement("div");
+      fireworks.className = "fireworks";
+      document.body.appendChild(fireworks);
+
+      setTimeout(() => {
+        document.body.removeChild(fireworks);
+      }, 1500);
+    }
   </script>
 </body>
 </html>
-
