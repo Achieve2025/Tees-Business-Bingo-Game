@@ -130,4 +130,158 @@
       const phrases = [
         'Someone says "We\'re so honoured to be nominated"',
         'Award winner thanks their team',
-        'Aw
+        'Awkward technical difficulty',
+        'Presenter mispronounces a company name',
+        'Someone takes too long to reach the stage',
+        'Presenter makes a joke that falls flat',
+        'Winner mentions "challenging year"',
+        'Someone spills a drink at their table',
+        'Winner admits they didn\'t prepare a speech'
+      ];
+
+      // References to the rule elements
+      const rule1El = document.getElementById('rule1');
+      const rule2El = document.getElementById('rule2');
+      const rule3El = document.getElementById('rule3');
+
+      // Fisher-Yates shuffle algorithm
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      // Load and display randomized bingo grid
+      function loadGrid() {
+        const gridContainer = document.getElementById('bingo-grid');
+        gridContainer.innerHTML = ''; // Clear previous grid
+        // Reset rules' active state
+        rule1El.classList.remove('active');
+        rule2El.classList.remove('active');
+        rule3El.classList.remove('active');
+
+        const shuffledPhrases = shuffle([...phrases]);
+
+        shuffledPhrases.forEach(phrase => {
+          const square = document.createElement('div');
+          square.className = 'square';
+          // Store the phrase (for potential resets)
+          square.dataset.phrase = phrase;
+          square.textContent = phrase;
+          square.addEventListener('click', () => handleSquareClick(square));
+          gridContainer.appendChild(square);
+        });
+      }
+
+      // Update the rules based on game progress
+      function updateRules() {
+        const squares = Array.from(document.querySelectorAll('.square'));
+        // Rule 1: At least one square tapped
+        if (squares.some(sq => sq.classList.contains('tapped'))) {
+          rule1El.classList.add('active');
+        } else {
+          rule1El.classList.remove('active');
+        }
+        // Rule 3: Full board tapped
+        if (squares.every(sq => sq.classList.contains('tapped'))) {
+          rule3El.classList.add('active');
+        } else {
+          rule3El.classList.remove('active');
+        }
+        // Rule 2: Check for any complete line (row, column, or diagonal)
+        let lineCompleted = false;
+        const sq = squares;
+        // Rows
+        for (let i = 0; i < 3; i++) {
+          if (sq[i*3].classList.contains('tapped') &&
+              sq[i*3+1].classList.contains('tapped') &&
+              sq[i*3+2].classList.contains('tapped')) {
+            lineCompleted = true;
+            break;
+          }
+        }
+        // Columns
+        if (!lineCompleted) {
+          for (let j = 0; j < 3; j++) {
+            if (sq[j].classList.contains('tapped') &&
+                sq[j+3].classList.contains('tapped') &&
+                sq[j+6].classList.contains('tapped')) {
+              lineCompleted = true;
+              break;
+            }
+          }
+        }
+        // Diagonals
+        if (!lineCompleted) {
+          if (sq[0].classList.contains('tapped') &&
+              sq[4].classList.contains('tapped') &&
+              sq[8].classList.contains('tapped')) {
+            lineCompleted = true;
+          }
+          if (!lineCompleted && sq[2].classList.contains('tapped') &&
+              sq[4].classList.contains('tapped') &&
+              sq[6].classList.contains('tapped')) {
+            lineCompleted = true;
+          }
+        }
+        if (lineCompleted) {
+          rule2El.classList.add('active');
+        } else {
+          rule2El.classList.remove('active');
+        }
+      }
+
+      // Handle square click event
+      function handleSquareClick(square) {
+        if (!square.classList.contains('tapped')) {
+          square.classList.add('tapped');
+          // Replace square content with a centered, large beer emoji
+          square.innerHTML = '<span class="marker">🍺</span>';
+          updateRules();
+          checkBoardCompletion();
+        }
+      }
+
+      // Check if the board is fully tapped; if so, trigger fireworks
+      function checkBoardCompletion() {
+        const squares = Array.from(document.querySelectorAll('.square'));
+        if (squares.every(sq => sq.classList.contains('tapped'))) {
+          triggerFireworks();
+        }
+      }
+
+      // Trigger fireworks using canvas-confetti
+      function triggerFireworks() {
+        const duration = 5000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            return;
+          }
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0, 1), y: Math.random() - 0.2 }
+          }));
+        }, 250);
+      }
+
+      // Reset button functionality
+      document.getElementById('reset-btn').addEventListener('click', loadGrid);
+
+      // Initialize the grid on page load
+      loadGrid();
+    });
+  </script>
+</body>
+</html>
